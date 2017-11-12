@@ -151,4 +151,16 @@ class Vector3 extends Vector{
         var z = this.x * v.y - this.y * v.x
         return new Vector3(x,y,z)
     }
+
+    rotX(t:number){
+
+    }
+
+    rotY(t:number){
+
+    }
+
+    rotZ(t:number){
+
+    }
 }

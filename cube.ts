@@ -2,6 +2,22 @@
 
 enum Color { green, blue, orange, red, white, yellow }
 enum Side{F,B,L,R,U,D}
+enum Edge{top,right,bot,left}
+
+var edgeIndicesMap = new Map<Edge,Vector2[]>()
+edgeIndicesMap.set(Edge.top,[new Vector2(0,0),new Vector2(1,0),new Vector2(2,0),])
+edgeIndicesMap.set(Edge.right,[new Vector2(2,0),new Vector2(2,1),new Vector2(2,2),])
+edgeIndicesMap.set(Edge.bot,[new Vector2(0,2),new Vector2(1,2),new Vector2(2,2),])
+edgeIndicesMap.set(Edge.left,[new Vector2(0,0),new Vector2(0,1),new Vector2(0,2),])
+
+var side2NormalMap = new Map<Side,Vector3>();
+side2NormalMap.set(Side.F,new Vector3(0,0,-1))
+side2NormalMap.set(Side.B,new Vector3(0,0,1))
+side2NormalMap.set(Side.L,new Vector3(-1,0,0))
+side2NormalMap.set(Side.R,new Vector3(1,0,0))
+side2NormalMap.set(Side.U,new Vector3(0,1,0))
+side2NormalMap.set(Side.D,new Vector3(0,-1,0))
+
 class Action{
     side:Side
     counterClockWise:boolean
@@ -107,74 +123,118 @@ class Cube {
         cap = newFront
     }
 
-    private rotateCapSides(side: Side, counterclockwise: boolean) {
-        
-        switch(side){
-            // enum Side { F, B, L, R, U, D }
-            case Side.F: {
-                var newside = [
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0],
-                ]
-                copyEdge(this.vals[Side.U],newside
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                )
-                copyEdge(this.vals[Side.U], newside
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                )
-                copyEdge(this.vals[Side.U], newside
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                )
-                copyEdge(this.vals[Side.U], newside
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                    , new Vector2(0, 0)
-                )
-                this.vals[Side.F] = newside
-                break;
-            }
-
-            case Side.B: {
-                this.vals[Side.B] = newside
-                break;
-            }
-            case Side.L: {
-                this.vals[Side.L] = newside
-                break;
-            }
-            case Side.R: {
-                this.vals[Side.R] = newside
-                break;
-            }
-            case Side.U: {
-                this.vals[Side.U] = newside
-                break;
-            }
-            case Side.D: {
-                this.vals[Side.D] = newside
-                break;
+    private rotateCapSides(side: Side, counterclockwise: boolean) {//otherwise use 3d model with normals
+        if(counterclockwise){
+            this.rotateCapSides(side,false)
+            this.rotateCapSides(side,false)
+            this.rotateCapSides(side,false)
+        }else{
+            switch(side){
+                // enum Color { green, blue, orange, red, white, yellow }
+                // enum Side { F, B, L, R, U, D }
+                case Side.F: {
+                    this.rotateSides(this.vals,
+                        Side.U,Edge.bot,
+                        Side.R,Edge.left,
+                        Side.D,Edge.top,
+                        Side.L,Edge.right
+                    )
+                    break;
+                }
+                case Side.B: {
+                    this.rotateSides(this.vals,
+                        Side.U,Edge.top,
+                        Side.L,Edge.left,
+                        Side.D,Edge.bot,
+                        Side.R,Edge.right
+                    )
+                    break;
+                }
+                case Side.L: {
+                    this.rotateSides(this.vals,
+                        Side.U,Edge.left,
+                        Side.F,Edge.left,
+                        Side.D,Edge.left,
+                        Side.B,Edge.right
+                    )
+                    break;
+                }
+                case Side.R: {
+                    this.rotateSides(this.vals,
+                        Side.U,Edge.right,
+                        Side.B,Edge.left,
+                        Side.D,Edge.right,
+                        Side.F,Edge.right
+                    )
+                    break;
+                }
+                case Side.U: {
+                    this.rotateSides(this.vals,
+                        Side.B,Edge.top,
+                        Side.R,Edge.top,
+                        Side.F,Edge.top,
+                        Side.L,Edge.top
+                    )
+                    break;
+                }
+                case Side.D: {
+                    this.rotateSides(this.vals,
+                        Side.F,Edge.bot,
+                        Side.R,Edge.bot,
+                        Side.B,Edge.bot,
+                        Side.L,Edge.bot
+                    )
+                    break;
+                }
             }
         }
     }
+
+    private rotateSides(cube:Color[][][],top:Side,topside:Edge,right:Side,rightside:Edge,bot:Side,botside:Edge,left:Side,leftside:Edge){
+        //move top to copy of right
+        var newright = this.srcEdgeToCopyEdge(this.vals[top],topside,this.vals[right],rightside)
+
+        //move right to copy of bot
+        var newbot = this.srcEdgeToCopyEdge(this.vals[right],rightside,this.vals[bot],botside)
+
+        //move bot to copy of left
+        var newleft = this.srcEdgeToCopyEdge(this.vals[bot],botside,this.vals[left],leftside)
+
+        //move left to copy of top
+        var newtop = this.srcEdgeToCopyEdge(this.vals[left],leftside,this.vals[top],topside)
+
+        //replace originals with the copys
+        this.vals[top] = newtop
+        this.vals[right] = newtop
+        this.vals[bot] = newtop
+        this.vals[left] = newtop
+
+    }
+
+    private srcEdgeToCopyEdge(src:Color[][],srcEdge:Edge,dstToCopy:Color[][],dstEdge:Edge):Color[][]{
+        var copy = copy2Darray(dstToCopy)
+        var srcIndices = edgeIndicesMap.get(srcEdge) as Vector2[]
+        var dstIndices = edgeIndicesMap.get(dstEdge) as Vector2[]
+        for(var i = 0; i < srcIndices.length; i++){
+            setxy(copy,dstIndices[i],getxy(src,srcIndices[i]))
+        }
+        return copy;
+    }
+
+    rotateSidesUsingMath(side: Side, counterclockwise: boolean){
+        var normal = side2NormalMap.get(side)
+        var top 
+    }
+
+    getColorFromNormal(normal:Vector3,offset:Vector3):Color{
+        return null;
+    }
+
+    setColorFromNormal(normal:Vector3,offset:Vector3,color:Color){
+
+    }
+
+    
 
     draw(ctxt:CanvasRenderingContext2D){
         var locs = [
@@ -205,7 +265,11 @@ function getxy(arr,v:Vector2){
     return arr[v.y][v.x]
 }
 
-function copyEdge(src: number[][], dst: number[][], a0: Vector2, a1: Vector2, a2: Vector2, b0: Vector2, b1: Vector2, b2: Vector2) {
+function setxy(arr,v:Vector2,val){
+    arr[v.y][v.x] = val
+}
+
+function multiswap(src: number[][], dst: number[][], a0: Vector2, a1: Vector2, a2: Vector2, b0: Vector2, b1: Vector2, b2: Vector2) {
     swap(src, dst, a0, b0)
     swap(src, dst, a1, b1)
     swap(src, dst, a2, b2)
@@ -215,4 +279,15 @@ function swap(a: number[][], b: number[][], av: Vector2, bv: Vector2){
     var temp = getxy(a, av)
     a[av.y][av.x] = getxy(b, bv)
     b[bv.y][bv.x] = temp
+}
+
+function copy2Darray(array:any[][]){
+    var copy = new Array(array.length)
+    for(var y = 0; y < array.length; y++){
+        copy[y] = new Array(array[y].length)
+        for(var x = 0; x < array[y].length; x++){
+            copy[y][x] = array[y][x]
+        }
+    }
+    return copy
 }
