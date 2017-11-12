@@ -5,8 +5,8 @@ enum Side{F,B,L,R,U,D}
 enum Edge{top,right,bot,left}
 
 var edgeIndicesMap = new Map<Edge,Vector2[]>()
-edgeIndicesMap.set(Edge.top,[new Vector2(0,0),new Vector2(1,0),new Vector2(2,0),])
-edgeIndicesMap.set(Edge.right,[new Vector2(2,0),new Vector2(2,1),new Vector2(2,2),])
+edgeIndicesMap.set(Edge.top,[new Vector2(2,0),new Vector2(1,0),new Vector2(0,0),])
+edgeIndicesMap.set(Edge.right,[new Vector2(2,2),new Vector2(2,1),new Vector2(2,0),])
 edgeIndicesMap.set(Edge.bot,[new Vector2(0,2),new Vector2(1,2),new Vector2(2,2),])
 edgeIndicesMap.set(Edge.left,[new Vector2(0,0),new Vector2(0,1),new Vector2(0,2),])
 
@@ -57,27 +57,27 @@ class Cube {
     }
 
     F(counterclockwise:boolean) {
-        this.rotateCap(0,counterclockwise)
+        this.rotateCap(Side.F,counterclockwise)
     }
 
     B(counterclockwise: boolean) {
-        this.rotateCap(1, counterclockwise)
+        this.rotateCap(Side.B, counterclockwise)
     }
 
     L(counterclockwise: boolean) {
-        this.rotateCap(2, counterclockwise)
+        this.rotateCap(Side.L, counterclockwise)
     }
 
     R(counterclockwise: boolean) {
-        this.rotateCap(3, counterclockwise)
+        this.rotateCap(Side.R, counterclockwise)
     }
 
     U(counterclockwise: boolean) {
-        this.rotateCap(4, counterclockwise)
+        this.rotateCap(Side.U, counterclockwise)
     }
 
     D(counterclockwise: boolean) {
-        this.rotateCap(5, counterclockwise)
+        this.rotateCap(Side.D, counterclockwise)
     }
 
     generateRandomActions(n):Action[]{
@@ -103,16 +103,18 @@ class Cube {
         var vecs = [
             new Vector2(-1, 1),
             new Vector2(0, 1),
-            new Vector2(-1, 1),
-            new Vector2(-1, 0),
-            new Vector2(-1, -1),
+            new Vector2(1, 1),
+            new Vector2(1, 0),
+            new Vector2(1, -1),
             new Vector2(0, -1),
             new Vector2(-1, -1),
             new Vector2(-1, 0),
         ]
         var vec1 = new Vector2(1, 1)
         for (var v of vecs) {
-            v.rot(-rot).round().add(vec1)//negative rotation because need to look back
+            v.rot(-rot).round()
+            v.y = -v.y
+            v.add(vec1)//negative rotation because need to look back
         }
 
         var newFront = [
@@ -120,7 +122,7 @@ class Cube {
             [getxy(cap, vecs[7]), cap[1][1], getxy(cap, vecs[3]),],
             [getxy(cap, vecs[6]), getxy(cap, vecs[5]), getxy(cap, vecs[4]),],
         ]
-        cap = newFront
+        this.vals[side] = newFront
     }
 
     private rotateCapSides(side: Side, counterclockwise: boolean) {//otherwise use 3d model with normals
@@ -189,25 +191,26 @@ class Cube {
             }
         }
     }
-
-    private rotateSides(cube:Color[][][],top:Side,topside:Edge,right:Side,rightside:Edge,bot:Side,botside:Edge,left:Side,leftside:Edge){
+    // enum Side{F,B,L,R,U,D}
+    // enum Edge{top,right,bot,left}
+    private rotateSides(cube:Color[][][],top:Side,topsideEdge:Edge,right:Side,rightsideEdge:Edge,bot:Side,botside:Edge,left:Side,leftside:Edge){
         //move top to copy of right
-        var newright = this.srcEdgeToCopyEdge(this.vals[top],topside,this.vals[right],rightside)
+        var newright = this.srcEdgeToCopyEdge(this.vals[top],topsideEdge,this.vals[right],rightsideEdge)
 
         //move right to copy of bot
-        var newbot = this.srcEdgeToCopyEdge(this.vals[right],rightside,this.vals[bot],botside)
+        var newbot = this.srcEdgeToCopyEdge(this.vals[right],rightsideEdge,this.vals[bot],botside)
 
         //move bot to copy of left
         var newleft = this.srcEdgeToCopyEdge(this.vals[bot],botside,this.vals[left],leftside)
 
         //move left to copy of top
-        var newtop = this.srcEdgeToCopyEdge(this.vals[left],leftside,this.vals[top],topside)
+        var newtop = this.srcEdgeToCopyEdge(this.vals[left],leftside,this.vals[top],topsideEdge)
 
         //replace originals with the copys
         this.vals[top] = newtop
-        this.vals[right] = newtop
-        this.vals[bot] = newtop
-        this.vals[left] = newtop
+        this.vals[right] = newright
+        this.vals[bot] = newbot
+        this.vals[left] = newleft
 
     }
 
@@ -254,7 +257,7 @@ class Cube {
         var size = 50
         for(var x = 0; x < 3; x++){
             for(var y = 0; y < 3; y++){
-                ctxt.fillStyle = Color[side]
+                ctxt.fillStyle = Color[this.vals[side][y][x]]
                 ctxt.fillRect(x * size + v.x,y * size + v.y,size,size)
             }
         }
