@@ -23,7 +23,7 @@ function max(a, b){
 }
 
 function clamp(val, min, max){
-    return this.max(this.min(val, max), min)
+    return max(min(val, max), min)
 }
 
 function rangeContain(a1,a2,b1,b2){//as in does a enclose b----- so returns true if b is smaller in all ways
@@ -111,4 +111,27 @@ function getFiles(strings){
         promises.push(promise)
     }
     return Promise.all(promises)
+}
+
+class DuplexMap<K,V>{
+    map:Map<K,V>
+    reverseMap:Map<V,K>
+
+    constructor(){
+        this.map = new Map()
+        this.reverseMap = new Map()
+    }
+
+    get(key:K){
+        return this.map.get(key)
+    }
+
+    set(key:K,val:V){
+        this.map.set(key,val)
+        this.reverseMap.set(val,key)
+    }
+
+    rget(val:V){
+        return this.reverseMap.get(val)
+    }
 }

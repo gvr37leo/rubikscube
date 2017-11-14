@@ -27,7 +27,20 @@ class Action{
         this.counterClockWise = reverse
     }
 
-    rotate(){
+    rotateActionToSide(side: Side, action: Action) {
+        var destNormal = side2NormalMap.get(side)
+        var actionNormal = side2NormalMap.get(action.side)
+
+        var plane = destNormal.cross(actionNormal)
+        var angle = Math.acos(destNormal.dot(actionNormal))
+
+
+        var rotationBetween;
+
+        var relLook = new Vector3(0,0,-1).rot(rotationBetween)
+        var newside;//=get side from vector
+        action.side = newside;
+
 
     }
 }
@@ -53,8 +66,20 @@ class Block{
         return this.faces.length == 2
     }
 
-    isSameBlock() {
-
+    isSameBlock(other:Block) {
+        if(this.isEdge() != other.isEdge()){
+            return false
+        }else{
+            for(var face of this.faces){
+                var result = other.faces.find((tface) => {
+                    return tface.color == face.color
+                })
+                if(result == undefined){
+                    return false
+                }
+            }
+            return true
+        }
     }
 
     isSameBlockAndSameOrientation() {
@@ -192,6 +217,8 @@ class Cube {
         }
         return actions
     }
+
+    
 
     executeActions(actions:Action[]){
         for(var action of actions){
