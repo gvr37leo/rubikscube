@@ -26,7 +26,42 @@ class Action{
         this.side = side
         this.counterClockWise = reverse
     }
+
+    rotate(){
+
+    }
 }
+
+class Face{
+    color:Color
+    side:Side
+
+    constructor(color: Color,side: Side){
+        this.color = color
+        this.side = side
+    }
+}
+
+class Block{
+    faces:Face[]
+
+    constructor(faces:Face[]){
+        this.faces = faces
+    }
+
+    isEdge(){
+        return this.faces.length == 2
+    }
+
+    isSameBlock() {
+
+    }
+
+    isSameBlockAndSameOrientation() {
+
+    }
+}
+
 class Cube {
 
     vals: Color[][][]
@@ -53,6 +88,14 @@ class Cube {
         this.orientBottomCorners()
     }
 
+    getBlock(v:Vector3):Block{
+        return null
+    }
+
+    findBlock(block:Block):Vector3{
+        return null
+    }
+
     topEdges(){
         var uruf = [new Action(Side.U, true), new Action(Side.R, true), new Action(Side.U, false), new Action(Side.F, true),]//edge correct place but oriendted wrong
         var frdrff = [new Action(Side.F, true), new Action(Side.R, true), new Action(Side.D, true),
@@ -61,8 +104,6 @@ class Cube {
             new Action(Side.F, false), new Action(Side.F, false),]//edge at the side
 
         //detect case and apply algorithm
-
-        
     }
 
     topCorners(){
@@ -331,18 +372,6 @@ function getxy(arr,v:Vector2){
 
 function setxy(arr,v:Vector2,val){
     arr[v.y][v.x] = val
-}
-
-function multiswap(src: number[][], dst: number[][], a0: Vector2, a1: Vector2, a2: Vector2, b0: Vector2, b1: Vector2, b2: Vector2) {
-    swap(src, dst, a0, b0)
-    swap(src, dst, a1, b1)
-    swap(src, dst, a2, b2)
-}
-
-function swap(a: number[][], b: number[][], av: Vector2, bv: Vector2){
-    var temp = getxy(a, av)
-    a[av.y][av.x] = getxy(b, bv)
-    b[bv.y][bv.x] = temp
 }
 
 function copy2Darray(array:any[][]){
