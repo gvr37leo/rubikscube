@@ -44,7 +44,68 @@ class Cube {
     }
 
     solve() {
+        this.topEdges()
+        this.topCorners()
+        this.middleEdges()
+        this.bottomCross()
+        this.bottomEdges()
+        this.positionBottomCorners()
+        this.orientBottomCorners()
+    }
 
+    topEdges(){
+        var uruf = [new Action(Side.U, true), new Action(Side.R, true), new Action(Side.U, false), new Action(Side.F, true),]//edge correct place but oriendted wrong
+        var frdrff = [new Action(Side.F, true), new Action(Side.R, true), new Action(Side.D, true),
+            new Action(Side.R, false), new Action(Side.F, false), new Action(Side.F, false),]//edge at the bottom
+        var rdrff = [new Action(Side.R, true), new Action(Side.D, true), new Action(Side.R, false),
+            new Action(Side.F, false), new Action(Side.F, false),]//edge at the side
+
+        //detect case and apply algorithm
+
+        
+    }
+
+    topCorners(){
+        var rdrd = [new Action(Side.R, true), new Action(Side.D, true), new Action(Side.R, false), new Action(Side.D, false)]//corner at bot or correct spot but oriented wrong
+        var fdf = [new Action(Side.F, false), new Action(Side.D, false), new Action(Side.F, true),]//bottom and oriented wrong
+        var rddrdrdr = [new Action(Side.R, true), new Action(Side.D, false), new Action(Side.D, false), new Action(Side.R, false),
+            new Action(Side.D, false), new Action(Side.R, true), new Action(Side.D, true), new Action(Side.R, false),]//bottom and oriented wrong
+
+    }
+
+    middleEdges(){
+        var ululufuf = [new Action(Side.U, true), new Action(Side.L, true), new Action(Side.U, false), new Action(Side.L, false),
+            new Action(Side.U, false), new Action(Side.F, false), new Action(Side.U, true), new Action(Side.F, true),]//top to left
+        var ururufuf = [new Action(Side.U, false), new Action(Side.R, false), new Action(Side.U, true), new Action(Side.R, true),
+            new Action(Side.U, true), new Action(Side.U, true), new Action(Side.U, false), new Action(Side.U, false),]//top to right
+        var ururufufuuururufuf = ururufuf.slice().concat([new Action(Side.U, false), new Action(Side.U, false),], ururufuf.slice())//oriented wrong
+
+    }
+
+    bottomCross(){
+        var fruruf = [new Action(Side.F, false), new Action(Side.R, false), new Action(Side.U, false),
+            new Action(Side.R, true), new Action(Side.U, true), new Action(Side.F, true),]//progress topstate
+        //detect 1 of the following and orient to correct alignment
+        //dot
+        //L
+        //line
+        //cross
+    }
+
+    bottomEdges(){
+        var rururuuru = [new Action(Side.R, false), new Action(Side.U, false), new Action(Side.R, true), new Action(Side.U, false), new Action(Side.R, false),
+            new Action(Side.U, false), new Action(Side.U, false), new Action(Side.U, true), new Action(Side.U, false),]//swap edges
+    }
+
+    positionBottomCorners(){
+        var urulurul = [new Action(Side.U, false), new Action(Side.R, false), new Action(Side.U, true), new Action(Side.L, true),
+            new Action(Side.U, false), new Action(Side.R, true), new Action(Side.U, true), new Action(Side.L, false),]//position corners
+        //detect 0,1 or 4 blocks are right
+
+    }
+
+    orientBottomCorners(){
+        var rdrd = [new Action(Side.R, true), new Action(Side.D, true), new Action(Side.R, false), new Action(Side.D, false)]//rotate corner
     }
 
     scramble(n) {
