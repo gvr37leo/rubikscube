@@ -67,6 +67,15 @@ class Vector{
         return new Vector(this.vals.length).overwrite(this)
     }
 
+    equals(other:Vector):boolean{
+        for (var i = 0; i < this.vals.length; i++) {
+            if(this.vals[i] != other.vals[i]){
+                return false
+            }
+        }
+        return true
+    }
+
     overwrite(v:Vector):Vector{
         for(var i = 0; i < this.vals.length; i++){
             this.vals[i] = v.vals[i]

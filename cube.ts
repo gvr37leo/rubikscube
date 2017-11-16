@@ -18,6 +18,14 @@ side2NormalMap.set(Side.R,new Vector3(1,0,0))
 side2NormalMap.set(Side.U,new Vector3(0,1,0))
 side2NormalMap.set(Side.D,new Vector3(0,-1,0))
 
+function normal2Side(v:Vector3):Side{
+    for(var i = 0; i < 6; i++){
+        if(v == side2NormalMap.get(i)){
+            return i;
+        }
+    }
+}
+
 class Action{
     side:Side
     counterClockWise:boolean
@@ -114,7 +122,32 @@ class Cube {
     }
 
     getBlock(v:Vector3):Block{
-        return null
+        var faces:Face[] = []
+        var normals:Vector3[] = []
+        for(var i = 0; i < 3;i++){
+            if(v.vals[i] != 0){
+                var normal = new Vector3(0,0,0)
+                normal.vals[i] = v.vals[i]
+                normals.push(normal)    
+            }
+        }
+
+        var faces:Face[] = []
+        for(var i = 0; i < normals.length; i++){
+            var side:Side = normal2Side(normal)
+
+            for(var j = 0; j < normals.length;j++){
+                var cubeface = this.vals[side]
+                if(i == j){
+                    continue
+                }
+
+            }
+        }
+        
+        
+
+        return new Block(faces)
     }
 
     findBlock(block:Block):Vector3{
